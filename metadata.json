@@ -1,0 +1,7 @@
+{
+  "name": "PropComply AI - Prototype",
+  "description": "An AI-powered KYC and AML compliance platform purpose-built for UK estate agents and letting agencies, featuring automated risk scoring, ID verification, and regulatory intelligence.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
