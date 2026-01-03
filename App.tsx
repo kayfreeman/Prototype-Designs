@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { 
-  LayoutDashboard, Users, ShieldAlert, Settings, Bell, Search, Bot, 
-  Camera, Zap, HelpCircle, LogOut, Menu, X
+  LayoutDashboard, Building2, ShieldAlert, Settings, Bell, Search, Bot, 
+  Camera, Zap, HelpCircle, LogOut, Menu, X, History, FileSearch
 } from 'lucide-react';
 import DashboardView from './components/DashboardView';
 import ClientListView from './components/ClientListView';
@@ -11,13 +11,18 @@ import SidebarItem from './components/SidebarItem';
 import IDVerificationFlow from './components/IDVerificationFlow';
 import LandingPage from './components/LandingPage';
 import AuthPage from './components/AuthPage';
+import SettingsView from './components/SettingsView';
+import InquiryCenter from './components/InquiryCenter';
+import PropertyDetailView from './components/PropertyDetailView';
 
 type ViewState = 'landing' | 'auth' | 'dashboard';
+type TabType = 'dashboard' | 'properties' | 'intel' | 'verify' | 'settings' | 'inquiry';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('landing');
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'clients' | 'intel' | 'verify'>('dashboard');
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
 
   // Landing Page View
   if (view === 'landing') {
@@ -45,8 +50,8 @@ const App: React.FC = () => {
               <ShieldAlert size={22} className="text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">PropComply <span className="text-blue-400">AI</span></h1>
-              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest leading-none mt-1">Agency Hub</p>
+              <h1 className="text-xl font-bold tracking-tight text-white">PropComply <span className="text-blue-400">AI</span></h1>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest leading-none mt-1">PCMaaS Portal</p>
             </div>
           </div>
           <button 
@@ -60,37 +65,50 @@ const App: React.FC = () => {
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           <SidebarItem 
             icon={<LayoutDashboard size={20} />} 
-            label="Dashboard" 
+            label="System Status" 
             active={activeTab === 'dashboard'} 
             collapsed={!isSidebarOpen}
-            onClick={() => setActiveTab('dashboard')} 
+            onClick={() => { setActiveTab('dashboard'); setSelectedPropertyId(null); }} 
           />
           <SidebarItem 
-            icon={<Users size={20} />} 
-            label="Client Portfolio" 
-            active={activeTab === 'clients'} 
+            icon={<Building2 size={20} />} 
+            label="Property Memory" 
+            active={activeTab === 'properties'} 
             collapsed={!isSidebarOpen}
-            onClick={() => setActiveTab('clients')} 
+            onClick={() => { setActiveTab('properties'); setSelectedPropertyId(null); }} 
+          />
+          <SidebarItem 
+            icon={<FileSearch size={20} />} 
+            label="Inquiry Center" 
+            active={activeTab === 'inquiry'} 
+            collapsed={!isSidebarOpen}
+            onClick={() => { setActiveTab('inquiry'); setSelectedPropertyId(null); }} 
           />
           <SidebarItem 
             icon={<Camera size={20} />} 
-            label="ID Verification" 
+            label="Verification Hub" 
             active={activeTab === 'verify'} 
             collapsed={!isSidebarOpen}
-            onClick={() => setActiveTab('verify')} 
+            onClick={() => { setActiveTab('verify'); setSelectedPropertyId(null); }} 
           />
           <SidebarItem 
             icon={<Bot size={20} />} 
             label="Regulatory Copilot" 
             active={activeTab === 'intel'} 
             collapsed={!isSidebarOpen}
-            onClick={() => setActiveTab('intel')} 
+            onClick={() => { setActiveTab('intel'); setSelectedPropertyId(null); }} 
           />
           
           <div className="pt-6 mt-6 border-t border-slate-800">
              <p className={`px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ${!isSidebarOpen && 'hidden'}`}>Organization</p>
-             <SidebarItem icon={<Settings size={20} />} label="Settings" active={false} collapsed={!isSidebarOpen} onClick={() => alert("Settings module coming soon.")} />
-             <SidebarItem icon={<HelpCircle size={20} />} label="Support" active={false} collapsed={!isSidebarOpen} onClick={() => window.location.hash = "faq"} />
+             <SidebarItem icon={<History size={20} />} label="Forensic Logs" active={false} collapsed={!isSidebarOpen} onClick={() => alert("Forensic reconstruction tools are restricted to Forensic tier accounts.")} />
+             <SidebarItem 
+               icon={<Settings size={20} />} 
+               label="Settings" 
+               active={activeTab === 'settings'} 
+               collapsed={!isSidebarOpen} 
+               onClick={() => { setActiveTab('settings'); setSelectedPropertyId(null); }} 
+             />
           </div>
         </nav>
 
@@ -103,7 +121,7 @@ const App: React.FC = () => {
             {isSidebarOpen && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-white truncate leading-tight">James Dixon</p>
-                <p className="text-[11px] text-slate-400 truncate">AML Officer</p>
+                <p className="text-[11px] text-slate-400 truncate">Compliance Head</p>
               </div>
             )}
             {isSidebarOpen && (
@@ -126,7 +144,7 @@ const App: React.FC = () => {
                 <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input 
                   type="text" 
-                  placeholder="Universal Search (Cmd + K)" 
+                  placeholder="Search Property Memory (Cmd + K)" 
                   className="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-slate-100 border border-transparent focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 text-sm outline-none transition-all"
                 />
              </div>
@@ -139,7 +157,7 @@ const App: React.FC = () => {
                   <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-blue-200 flex items-center justify-center text-[8px] font-bold text-blue-700">A{i}</div>
                 ))}
               </div>
-              <p className="text-[11px] font-semibold text-blue-700">3 Agents Online</p>
+              <p className="text-[11px] font-semibold text-blue-700">Audit Monitoring Active</p>
             </div>
 
             <button className="relative p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all hover:scale-105">
@@ -148,21 +166,37 @@ const App: React.FC = () => {
             </button>
 
             <button 
-              onClick={() => setActiveTab('verify')}
+              onClick={() => { setActiveTab('verify'); setSelectedPropertyId(null); }}
               className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-black transition-all shadow-lg shadow-slate-900/10 active:scale-95"
             >
               <Zap size={18} className="text-yellow-400" />
-              Quick Check
+              Rapid Scan
             </button>
           </div>
         </header>
 
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
           <div className="max-w-[1600px] mx-auto p-8">
-            {activeTab === 'dashboard' && <DashboardView onVerifyClick={() => setActiveTab('verify')} onAlertsClick={() => setActiveTab('clients')} />}
-            {activeTab === 'clients' && <ClientListView />}
+            {activeTab === 'dashboard' && <DashboardView onVerifyClick={() => setActiveTab('verify')} onAlertsClick={() => setActiveTab('properties')} onInquiryClick={() => setActiveTab('inquiry')} />}
+            
+            {activeTab === 'properties' && !selectedPropertyId && (
+              <ClientListView 
+                onInquiryClick={() => setActiveTab('inquiry')} 
+                onPropertySelect={(id) => setSelectedPropertyId(id)}
+              />
+            )}
+            
+            {activeTab === 'properties' && selectedPropertyId && (
+              <PropertyDetailView 
+                propertyId={selectedPropertyId} 
+                onBack={() => setSelectedPropertyId(null)} 
+              />
+            )}
+
             {activeTab === 'intel' && <RegulatoryIntelligence />}
             {activeTab === 'verify' && <IDVerificationFlow />}
+            {activeTab === 'settings' && <SettingsView />}
+            {activeTab === 'inquiry' && <InquiryCenter />}
           </div>
         </div>
       </main>
@@ -174,7 +208,7 @@ const App: React.FC = () => {
       >
         <Bot size={28} />
         <div className="absolute right-full mr-4 px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-          Compliance Copilot
+          Compliance Memory Assistant
         </div>
       </button>
     </div>

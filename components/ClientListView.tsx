@@ -1,28 +1,36 @@
 
 import React from 'react';
-import { ComplianceStatus, RiskLevel, Client } from '../types';
-import { MoreHorizontal, ShieldCheck, ShieldAlert, ShieldMinus, Clock } from 'lucide-react';
+import { ComplianceStatus, RiskLevel } from '../types';
+import { MoreHorizontal, ShieldCheck, ShieldAlert, ShieldMinus, Clock, History, FileSearch, Search, ChevronRight } from 'lucide-react';
 
-const clients: Client[] = [
-  { id: '1', name: 'Global Assets Holdings Ltd', type: 'Company', status: ComplianceStatus.FLAGGED, riskScore: 82, riskLevel: RiskLevel.HIGH, lastChecked: '2 hours ago', verificationSource: 'Companies House' },
-  { id: '2', name: 'Dr. Sarah Henderson', type: 'Individual', status: ComplianceStatus.PASSED, riskScore: 14, riskLevel: RiskLevel.LOW, lastChecked: '1 day ago', verificationSource: 'Passport/Onfido' },
-  { id: '3', name: 'Artem Volkov', type: 'Individual', status: ComplianceStatus.PENDING, riskScore: 45, riskLevel: RiskLevel.MEDIUM, lastChecked: '5 mins ago', verificationSource: 'International Sanctions' },
-  { id: '4', name: 'East London Property Group', type: 'Company', status: ComplianceStatus.PASSED, riskScore: 22, riskLevel: RiskLevel.LOW, lastChecked: '3 days ago', verificationSource: 'HMRC Registry' },
-  { id: '5', name: 'Marina Petrova', type: 'Individual', status: ComplianceStatus.FAILED, riskScore: 94, riskLevel: RiskLevel.CRITICAL, lastChecked: 'Just now', verificationSource: 'OFAC/HM Treasury' },
+const properties = [
+  { id: '1', address: '42 Mayfair Square, London', status: ComplianceStatus.PASSED, memoryDepth: '5.2 Years', riskLevel: RiskLevel.LOW, lastReconstructed: '2 hours ago', UBO: 'Verified' },
+  { id: '2', address: 'The Shard, Floor 32, London', status: ComplianceStatus.FLAGGED, memoryDepth: '8.4 Years', riskLevel: RiskLevel.HIGH, lastReconstructed: '1 day ago', UBO: 'Complex Chain' },
+  { id: '3', address: 'Chelsea Waterfront Apt 402', status: ComplianceStatus.PASSED, memoryDepth: '3.1 Years', riskLevel: RiskLevel.LOW, lastReconstructed: '5 mins ago', UBO: 'Verified' },
+  { id: '4', address: 'Commercial Estate B, Canary Wharf', status: ComplianceStatus.PENDING, memoryDepth: '0.5 Years', riskLevel: RiskLevel.MEDIUM, lastReconstructed: 'Just now', UBO: 'Awaiting Doc' },
+  { id: '5', address: '12-14 Notting Hill Gate', status: ComplianceStatus.FAILED, memoryDepth: '10.0 Years', riskLevel: RiskLevel.CRITICAL, lastReconstructed: 'Yesterday', UBO: 'Sanctioned Link' },
 ];
 
-const ClientListView: React.FC = () => {
+interface ClientListViewProps {
+  onInquiryClick?: () => void;
+  onPropertySelect?: (id: string) => void;
+}
+
+const ClientListView: React.FC<ClientListViewProps> = ({ onInquiryClick, onPropertySelect }) => {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
-      <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-        <h3 className="text-xl font-bold">Client Verifications</h3>
+    <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
+      <div className="p-10 border-b border-slate-100 flex items-center justify-between">
+        <div>
+           <h3 className="text-2xl font-black text-slate-900">Property Memory Portfolio</h3>
+           <p className="text-slate-500 font-medium mt-1">Persistent, regulator-defensible records across your property assets.</p>
+        </div>
         <div className="flex gap-2">
-          <select className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium outline-none">
-            <option>All Risk Levels</option>
-            <option>High Risk</option>
-            <option>Critical</option>
-          </select>
-          <button className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold">Add New Entity</button>
+          <button 
+            onClick={onInquiryClick}
+            className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2"
+          >
+             <FileSearch size={18} /> Inquiry Center
+          </button>
         </div>
       </div>
       
@@ -30,55 +38,65 @@ const ClientListView: React.FC = () => {
         <table className="w-full text-left">
           <thead>
             <tr className="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-wider font-bold">
-              <th className="px-6 py-4">Entity Name</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Risk Score</th>
-              <th className="px-6 py-4">Last Verification</th>
-              <th className="px-6 py-4">Source</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+              <th className="px-10 py-5">Property Asset</th>
+              <th className="px-6 py-5">Memory Status</th>
+              <th className="px-6 py-5">Retention Depth</th>
+              <th className="px-6 py-5">UBO Defensibility</th>
+              <th className="px-6 py-5">Last Reconstruction</th>
+              <th className="px-10 py-5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
-            {clients.map((client) => (
-              <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs ${client.type === 'Company' ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-600'}`}>
-                      {client.name.charAt(0)}
+          <tbody className="divide-y divide-slate-100 text-sm">
+            {properties.map((prop) => (
+              <tr 
+                key={prop.id} 
+                onClick={() => onPropertySelect?.(prop.id)}
+                className="hover:bg-slate-50/80 transition-all group cursor-pointer"
+              >
+                <td className="px-10 py-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                      <History size={20} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{client.name}</p>
-                      <p className="text-xs text-slate-500">{client.type}</p>
+                      <p className="font-bold text-slate-900">{prop.address}</p>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">ID: PR-{prop.id}9283</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <StatusBadge status={client.status} />
+                  <StatusBadge status={prop.status} />
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${getRiskColor(client.riskLevel)}`} 
-                        style={{ width: `${client.riskScore}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs font-bold text-slate-700">{client.riskScore}</span>
+                   <div className="flex flex-col">
+                      <span className="font-bold text-slate-700">{prop.memoryDepth}</span>
+                      <div className="w-24 h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
+                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(parseInt(prop.memoryDepth)*10, 100)}%` }}></div>
+                      </div>
+                   </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`text-[10px] px-2.5 py-1 rounded-md font-black uppercase tracking-widest ${prop.UBO.includes('Verified') ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
+                    {prop.UBO}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-slate-500 font-bold">
+                  {prop.lastReconstructed}
+                </td>
+                <td className="px-10 py-4 text-right">
+                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:text-blue-600 hover:border-blue-200 transition-all"
+                      title="View Memory Detail"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                    <button 
+                      className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 transition-all"
+                    >
+                      <MoreHorizontal size={18} />
+                    </button>
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <Clock size={14} />
-                    {client.lastChecked}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-xs px-2 py-1 bg-slate-100 rounded-md font-medium text-slate-600">{client.verificationSource}</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
-                    <MoreHorizontal size={18} />
-                  </button>
                 </td>
               </tr>
             ))}
@@ -86,12 +104,9 @@ const ClientListView: React.FC = () => {
         </table>
       </div>
       
-      <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-sm text-slate-500">
-        <p>Showing 5 of 1,284 clients</p>
-        <div className="flex items-center gap-2 font-bold">
-          <button className="px-3 py-1 bg-white border border-slate-200 rounded-md shadow-sm opacity-50 cursor-not-allowed">Prev</button>
-          <button className="px-3 py-1 bg-white border border-slate-200 rounded-md shadow-sm hover:bg-slate-50">Next</button>
-        </div>
+      <div className="p-10 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs font-black text-slate-400 uppercase tracking-widest">
+        <p>Managed Memory: 1,452 Property Assets</p>
+        <p>UK Forensic Standard Compliance Active</p>
       </div>
     </div>
   );
@@ -101,37 +116,28 @@ const StatusBadge: React.FC<{ status: ComplianceStatus }> = ({ status }) => {
   switch (status) {
     case ComplianceStatus.PASSED:
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[11px] font-bold">
-          <ShieldCheck size={12} /> Passed
+        <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+          <ShieldCheck size={12} /> Defensible
         </span>
       );
     case ComplianceStatus.FLAGGED:
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-[11px] font-bold">
-          <ShieldAlert size={12} /> Flagged
+        <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100">
+          <ShieldAlert size={12} /> Scrutiny
         </span>
       );
     case ComplianceStatus.FAILED:
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-700 rounded-full text-[11px] font-bold">
-          <ShieldMinus size={12} /> Failed
+        <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-100">
+          <ShieldMinus size={12} /> Breached
         </span>
       );
     case ComplianceStatus.PENDING:
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-[11px] font-bold animate-pulse">
-          <Clock size={12} /> Pending
+        <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">
+          <Clock size={12} /> Syncing
         </span>
       );
-  }
-};
-
-const getRiskColor = (level: RiskLevel) => {
-  switch (level) {
-    case RiskLevel.LOW: return 'bg-emerald-500';
-    case RiskLevel.MEDIUM: return 'bg-amber-500';
-    case RiskLevel.HIGH: return 'bg-orange-500';
-    case RiskLevel.CRITICAL: return 'bg-red-600';
   }
 };
 
