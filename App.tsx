@@ -10,16 +10,31 @@ import RegulatoryIntelligence from './components/RegulatoryIntelligence';
 import SidebarItem from './components/SidebarItem';
 import IDVerificationFlow from './components/IDVerificationFlow';
 import LandingPage from './components/LandingPage';
+import AuthPage from './components/AuthPage';
+
+type ViewState = 'landing' | 'auth' | 'dashboard';
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [view, setView] = useState<ViewState>('landing');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'clients' | 'intel' | 'verify'>('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
-  if (!isLoggedIn) {
-    return <LandingPage onSignIn={() => setIsLoggedIn(true)} />;
+  // Landing Page View
+  if (view === 'landing') {
+    return <LandingPage onSignIn={() => setView('auth')} />;
   }
 
+  // Authentication View
+  if (view === 'auth') {
+    return (
+      <AuthPage 
+        onAuthSuccess={() => setView('dashboard')} 
+        onBackToLanding={() => setView('landing')} 
+      />
+    );
+  }
+
+  // Main Dashboard Application
   return (
     <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
       {/* Sidebar */}
@@ -74,8 +89,8 @@ const App: React.FC = () => {
           
           <div className="pt-6 mt-6 border-t border-slate-800">
              <p className={`px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ${!isSidebarOpen && 'hidden'}`}>Organization</p>
-             <SidebarItem icon={<Settings size={20} />} label="Settings" active={false} collapsed={!isSidebarOpen} />
-             <SidebarItem icon={<HelpCircle size={20} />} label="Support" active={false} collapsed={!isSidebarOpen} />
+             <SidebarItem icon={<Settings size={20} />} label="Settings" active={false} collapsed={!isSidebarOpen} onClick={() => alert("Settings module coming soon.")} />
+             <SidebarItem icon={<HelpCircle size={20} />} label="Support" active={false} collapsed={!isSidebarOpen} onClick={() => window.location.hash = "faq"} />
           </div>
         </nav>
 
@@ -93,7 +108,7 @@ const App: React.FC = () => {
             )}
             {isSidebarOpen && (
               <button 
-                onClick={() => setIsLoggedIn(false)}
+                onClick={() => setView('landing')}
                 className="text-slate-500 hover:text-white transition-colors"
               >
                 <LogOut size={16} />
@@ -144,7 +159,7 @@ const App: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
           <div className="max-w-[1600px] mx-auto p-8">
-            {activeTab === 'dashboard' && <DashboardView onVerifyClick={() => setActiveTab('verify')} />}
+            {activeTab === 'dashboard' && <DashboardView onVerifyClick={() => setActiveTab('verify')} onAlertsClick={() => setActiveTab('clients')} />}
             {activeTab === 'clients' && <ClientListView />}
             {activeTab === 'intel' && <RegulatoryIntelligence />}
             {activeTab === 'verify' && <IDVerificationFlow />}

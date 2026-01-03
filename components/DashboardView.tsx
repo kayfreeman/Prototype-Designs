@@ -37,9 +37,10 @@ const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
 
 interface DashboardProps {
   onVerifyClick: () => void;
+  onAlertsClick?: () => void;
 }
 
-const DashboardView: React.FC<DashboardProps> = ({ onVerifyClick }) => {
+const DashboardView: React.FC<DashboardProps> = ({ onVerifyClick, onAlertsClick }) => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -52,7 +53,10 @@ const DashboardView: React.FC<DashboardProps> = ({ onVerifyClick }) => {
           <p className="text-slate-500 mt-1 font-medium">Global compliance health across all 12 agency branches.</p>
         </div>
         <div className="flex items-center gap-3">
-           <button className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm hover:shadow-md">
+           <button 
+             onClick={() => alert("Simulating Audit Export... PDF report being generated.")}
+             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm hover:shadow-md"
+           >
              <FileText size={18} className="text-slate-400" />
              Annual Audit Log
            </button>
@@ -76,15 +80,17 @@ const DashboardView: React.FC<DashboardProps> = ({ onVerifyClick }) => {
           color="bg-blue-50"
           sub="Last 30 days"
         />
-        <StatCard 
-          title="Critical Alerts" 
-          value="12" 
-          trend="-2.4%" 
-          positive={true}
-          icon={<AlertTriangle className="text-rose-600" size={24} />} 
-          color="bg-rose-50"
-          sub="Requires immediate SAR"
-        />
+        <div onClick={onAlertsClick} className="cursor-pointer">
+          <StatCard 
+            title="Critical Alerts" 
+            value="12" 
+            trend="-2.4%" 
+            positive={true}
+            icon={<AlertTriangle className="text-rose-600" size={24} />} 
+            color="bg-rose-50"
+            sub="Requires immediate SAR"
+          />
+        </div>
         <StatCard 
           title="Verification Latency" 
           value="4.2s" 
